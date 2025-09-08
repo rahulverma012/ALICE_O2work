@@ -54,6 +54,8 @@ checkInternet(){ STATUS=$(curl -s --max-time 3 -o /dev/null -w "%{http_code}" ht
   fi
 }
 
+export MEMORY_LIMIT="--resources-monitoring 2  --aod-memory-rate-limit 1000000000  --shm-segment-size 7500000000"
+
 #Execution part
 date
 starttime=$(date)
