@@ -1,6 +1,6 @@
 #!/bin/bash
 # Author: [Rahul Verma]
-# command : nohup ./build.sh &> build.log &
+# command: nohup ./build.sh &> build.log &
 
 nCore=20
 buildCommand="aliBuild build O2Physics -j$nCore --debug"
