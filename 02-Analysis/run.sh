@@ -70,3 +70,18 @@ buildO2Task
 checkInternet
 
 #04- My Execution Functions
+
+
+
+
+
+
+echo $starttime >> $outfile2
+date >> $outfile2
+code $outfile2
+
+echo "Printing the Errors and Warnings " &> $outfile3
+grep -e "IST" -e "\\[ERROR\\]" -e "\\[FATAL\\]" -e "segmentation" -e "Segmentation" -e "SEGMENTATION" -e "command not found" -e "Error:" -e "Error in " -e "\\[WARN\\]" -e "DEBUG" -e "Read info: lfn" $outfile2  >> $outfile3
+code $outfile3
+date
+
