@@ -1,0 +1,1 @@
+TGrid::Connect("alien://")
