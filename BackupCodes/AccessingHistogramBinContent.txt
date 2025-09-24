@@ -1,0 +1,11 @@
+//Performance critical points, to be kept in mind in future update.
+//float weight = h->GetBinContent(bin); is more time consuming 
+// TH1::GetBinContent(int bin) does:
+// Bounds checking (bin >= 0 && bin <= fNCells)
+// Handles overflows/underflows (bin 0 and fNCells + 1)
+// Works with axis translations (e.g., mapping x to bin)
+
+//TH1::GetArray()[bin]:
+// Just gives you a raw pointer to the internal bin content array (fArray)
+// It's a Double_t* (pointer to the histogram data in memory)
+// Access is immediate, no logic or checks
