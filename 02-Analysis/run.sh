@@ -7,6 +7,32 @@
 # env | grep prox
 
 makeSound()  { for i in $(seq 1 5); do echo -en "\a"; sleep 0.25; done ; }
+getTime() {
+  if [ $# -eq 1 ]; then
+    # One argument: compute time elapsed since given start time
+    local start="$1"
+    local now=$(date +%s%6N)
+    local elapsed=$((now - start))
+    echo "$elapsed"
+  elif [ $# -eq 2 ]; then
+    # Two arguments: return time difference in microseconds
+    local start="$1"
+    local end="$2"
+    local elapsed=$((end - start))
+    echo "$elapsed"
+  else
+    echo "Usage:"
+    echo "  getTime <start>              # Shows elapsed time in microseconds"
+    echo "  getTime <start> <end>        # Shows difference in microseconds"
+    return 1
+  fi
+}
+
+microToSeconds() {
+  local microseconds="$1"
+  awk "BEGIN {printf \"%.4f\", $microseconds / 1000000}"
+}
+
 checkToken() { tokenStatus=$(alien-token-info 2>&1 | tail -1)  # Capture the output of alien-token-info
   if [[ "$tokenStatus" == "File >>><<< not found" ]];then
     echo "$(date) ❌ ERROR :: Token Not Found, Create the token" ; makeSound
@@ -52,6 +78,60 @@ checkInternet(){ STATUS=$(curl -s --max-time 3 -o /dev/null -w "%{http_code}" ht
     makeSound
     exit 1
   fi
+}
+
+downloadAliceFiles(){
+  alicePathList="input_ALICEPathList.txt"
+  localPathList="input_ALICEPathToLocalFile.txt"
+  alienStorage="@ALICE::CERN::EOS"
+  fileList="input_data.txt"
+  fileStat="input_data.stat"
+
+  # Store inputList in an array
+  FileArray=()
+  while IFS= read -r line || [[ -n $line ]]; do     #[[ -n $line ]]  will capture the last line if the file ends without new line  
+      FileArray+=("$line")                       #Read from the file list and append the FileList
+  done < "$alicePathList"
+
+  localPathArray=()
+  while IFS= read -r line || [[ -n $line ]]; do     #[[ -n $line ]]  will capture the last line if the file ends without new line  
+      localPathArray+=("$line")                       #Read from the file list and append the FileList
+  done < "$localPathList"
+
+  if [ ${#FileArray[@]} != ${#localPathArray[@]} ]; then
+    echo "[downloadAliceFiles]: #FileArray[@] != #localPathArray[@] i.e. ${#FileArray[@]} != ${#localPathArray[@]}"
+    exit
+  fi
+
+  echo 
+  echo "Files to be downloaded :: nFiles = ${#FileArray[@]}"
+  # Print all lines
+  echo 
+  TotalTimeStart=$(date +%s%6N)
+  whereis_TotalTime=0
+  echo "FILE DOWNLOAD START ..."
+  for (( i=0; i< ${#FileArray[@]}; i++ )) ; do
+    echo "[downloadAliceFiles]: $((i+1))/${#FileArray[@]} :: ${FileArray[i]}  ==> ${localPathArray[i]}"
+    echo "[downloadAliceFiles]: $((i+1))/${#FileArray[@]} :: Downlaoding..."
+    filePath=${FileArray[$i]}
+    localPath=${localPathArray[$i]}
+
+    whereis_TimeStart=$(date +%s%6N)
+    alien.py whereis $filePath >> $fileStat
+    ((whereis_TotalTime+= $(getTime "$whereis_TimeStart")))
+    cp_TimeStart=$(date +%s%6N)
+    if alien.py cp "$filePath""$alienStorage" "file::$localPath" ; then
+      echo "File Download Succesfull"
+      echo $ROOT_File >> $fileList
+    else
+      echo "File Downlaod Fail"
+    fi
+    ((cp_TotalTime+= $(getTime "$cp_TimeStart")))
+  done
+
+  echo "FILE DOWNLOAD OVER :: total       Time = $(microToSeconds "$(getTime "$TotalTimeStart")") seconds"
+  echo "FILE DOWNLOAD OVER :: alien.py cp Time = $(microToSeconds $cp_TotalTime ) seconds"
+  echo "FILE DOWNLOAD OVER :: whereIs     Time = $(microToSeconds $whereis_TotalTime ) seconds"
 }
 
 export MEMORY_LIMIT="--resources-monitoring 2  --aod-memory-rate-limit 1000000000  --shm-segment-size 7500000000"
