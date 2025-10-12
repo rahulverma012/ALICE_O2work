@@ -128,10 +128,10 @@ downloadAliceFiles(){
     fi
     ((cp_TotalTime+= $(getTime "$cp_TimeStart")))
   done
-
-  echo "FILE DOWNLOAD OVER :: total       Time = $(microToSeconds "$(getTime "$TotalTimeStart")") seconds"
+  
   echo "FILE DOWNLOAD OVER :: alien.py cp Time = $(microToSeconds $cp_TotalTime ) seconds"
   echo "FILE DOWNLOAD OVER :: whereIs     Time = $(microToSeconds $whereis_TotalTime ) seconds"
+  echo "FILE DOWNLOAD OVER :: total       Time = $(microToSeconds "$(getTime "$TotalTimeStart")") seconds"
 }
 
 export MEMORY_LIMIT="--resources-monitoring 2  --aod-memory-rate-limit 1000000000  --shm-segment-size 7500000000"
