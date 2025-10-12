@@ -9,6 +9,11 @@ currentDir=$(pwd)
 timestamp=$(date '+%Y_%m_%d__%H:%M:%S')
 buildLogDir=$(pwd)"/buildLogDir_$timestamp"
 
+if ! grep -Fxq 'eval "$(direnv hook bash)"' ~/.bashrc; then
+  echo 'ERROR :: eval "$(direnv hook bash)" is missing from ~/.bashrc: add this before building any task'
+  return 1
+fi
+
 echo $buildLogDir
 
 mkdir $buildLogDir
