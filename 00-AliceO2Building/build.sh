@@ -3,7 +3,8 @@
 # command: nohup ./build.sh &> build.log &
 
 nCore=20
-buildCommand="aliBuild build O2Physics -j$nCore --debug"
+coreSet=" -j$nCore "
+buildCommand="aliBuild build O2Physics $coreSet --debug"
 buildDir="$ALIBUILD_WORK_DIR/../"
 currentDir=$(pwd)
 timestamp=$(date '+%Y_%m_%d__%H:%M:%S')
