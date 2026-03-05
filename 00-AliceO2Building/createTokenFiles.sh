@@ -1,7 +1,7 @@
 #/bin/bash
 
 # tokenPath="~/Downloads/myCertificate.p12"
-tokenPath="/home/rahul/A_Rahul_Folder/CERN/CERN_certificates/CERN_cert_2025.12.10/myCertificate.p12"
+tokenPath="$HOME/A_Rahul_Folder/CERN/CERN_certificates/CERN_cert_2025.12.10/myCertificate.p12"
 rm -rf  ~/.globus/usercert.pem  ~/.globus/userkey.pem
 mkdir -p ~/.globus
 openssl pkcs12 -clcerts -nokeys -in $tokenPath -out ~/.globus/usercert.pem
