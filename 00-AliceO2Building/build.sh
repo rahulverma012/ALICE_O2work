@@ -2,6 +2,7 @@
 # Author: [Rahul Verma]
 # command: nohup ./build.sh &> build.log &
 # https://alice-doc.github.io/alice-analysis-tutorial/building/ #official aliBuild site.
+# python3 -m pip uninstall alibuild
 # python3 -m pip install alibuild --upgrade --user
 # type aliBuild
 
